@@ -9,7 +9,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 
-[Live Demo](https://crowdsolve.vercel.app) • [Documentation](docs/) • [Report Bug](https://github.com/yourusername/crowdsolve/issues) • [Request Feature](https://github.com/yourusername/crowdsolve/issues)
+[Live Demo](https://crowd-solve-three.vercel.app) • [Documentation](docs/) • [Report Bug](https://github.com/yourusername/crowdsolve/issues) • [Request Feature](https://github.com/yourusername/crowdsolve/issues)
 
 </div>
 
