@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 interface User {
   id: string
@@ -17,8 +17,10 @@ interface AuthStore {
   user: User | null
   isLoading: boolean
   isAuthenticated: boolean
+  hasInitialized: boolean
   setUser: (user: User | null) => void
   setLoading: (loading: boolean) => void
+  setInitialized: (initialized: boolean) => void
   login: (email: string, password: string) => Promise<void>
   register: (username: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
@@ -29,8 +31,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
   isLoading: true,
   isAuthenticated: false,
+  hasInitialized: false,
   setUser: (user) => set({ user, isAuthenticated: !!user }),
   setLoading: (isLoading) => set({ isLoading }),
+  setInitialized: (hasInitialized) => set({ hasInitialized }),
   login: async (email, password) => {
     const response = await fetch("/api/auth/login", {
       method: "POST",
@@ -79,17 +83,21 @@ export const useAuthStore = create<AuthStore>((set) => ({
     } catch (error) {
       set({ user: null, isAuthenticated: false })
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false, hasInitialized: true })
     }
   },
 }))
 
 export function useAuth() {
   const store = useAuthStore()
+  const hasFetched = useRef(false)
 
   useEffect(() => {
-    store.fetchUser()
-  }, [])
+    if (!store.hasInitialized && !hasFetched.current) {
+      hasFetched.current = true
+      store.fetchUser()
+    }
+  }, [store.hasInitialized, store.fetchUser])
 
   return store
 }
