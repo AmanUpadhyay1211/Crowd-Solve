@@ -10,14 +10,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AvatarUpload } from "@/components/avatar-upload"
 import { useRouter } from "next/navigation"
 
 export function SettingsForm() {
   const router = useRouter()
   const { user, isAuthenticated, isLoading } = useAuth()
   const [bio, setBio] = useState("")
-  const [avatar, setAvatar] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -31,7 +30,6 @@ export function SettingsForm() {
   useEffect(() => {
     if (user) {
       setBio(user.bio || "")
-      setAvatar(user.avatar || "")
     }
   }, [user])
 
@@ -45,7 +43,7 @@ export function SettingsForm() {
       const response = await fetch("/api/users/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bio, avatar }),
+        body: JSON.stringify({ bio }),
       })
 
       if (!response.ok) {
@@ -89,20 +87,15 @@ export function SettingsForm() {
             </Alert>
           )}
 
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={avatar || user.avatar || "/placeholder.svg"} alt={user.username} />
-              <AvatarFallback className="text-xl">{user.username.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <Label htmlFor="avatar">Avatar URL</Label>
-              <Input
-                id="avatar"
-                type="url"
-                placeholder="https://example.com/avatar.jpg"
-                value={avatar}
-                onChange={(e) => setAvatar(e.target.value)}
-                disabled={isSubmitting}
+          <div className="space-y-4">
+            <div>
+              <Label>Avatar</Label>
+              <AvatarUpload
+                currentAvatar={user.avatar}
+                username={user.username}
+                onAvatarUpdate={() => {
+                  // Avatar is updated via the auth store
+                }}
               />
             </div>
           </div>
