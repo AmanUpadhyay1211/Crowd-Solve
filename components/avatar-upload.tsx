@@ -21,6 +21,7 @@ export function AvatarUpload({ currentAvatar, username, onAvatarUpdate }: Avatar
   const { setUser } = useAuth()
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault()
     const file = event.target.files?.[0]
     if (file) {
       handleUpload(file)
@@ -96,7 +97,8 @@ export function AvatarUpload({ currentAvatar, username, onAvatarUpdate }: Avatar
     }
   }
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
     fileInputRef.current?.click()
   }
 
@@ -109,6 +111,7 @@ export function AvatarUpload({ currentAvatar, username, onAvatarUpdate }: Avatar
 
       <div className="flex gap-2">
         <Button
+          type="button"
           onClick={handleClick}
           disabled={isUploading || isRemoving}
           size="sm"
@@ -124,6 +127,7 @@ export function AvatarUpload({ currentAvatar, username, onAvatarUpdate }: Avatar
 
         {currentAvatar && (
           <Button
+            type="button"
             onClick={handleRemove}
             disabled={isUploading || isRemoving}
             size="sm"

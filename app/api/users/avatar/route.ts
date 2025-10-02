@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Update user's avatar in database
     const updatedUser = await User.findByIdAndUpdate(
-      session.user.id,
+      session.userId,
       { avatar: avatarUrl },
       { new: true, select: "-password" }
     )
@@ -69,7 +69,7 @@ export async function DELETE(request: NextRequest) {
 
     // Remove avatar from user
     const updatedUser = await User.findByIdAndUpdate(
-      session.user.id,
+      session.userId,
       { $unset: { avatar: 1 } },
       { new: true, select: "-password" }
     )
