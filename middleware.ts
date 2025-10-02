@@ -1,0 +1,53 @@
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import { verifyToken } from "@/lib/auth"
+
+// Routes that require authentication
+const protectedRoutes = ["/problems/new", "/settings", "/admin"]
+
+// Routes that should redirect to home if already authenticated
+const authRoutes = ["/login", "/register"]
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+  const token = request.cookies.get("token")?.value
+
+  // Check if user is authenticated
+  let isAuthenticated = false
+  if (token) {
+    const payload = await verifyToken(token)
+    isAuthenticated = !!payload
+  }
+
+  // Redirect to login if accessing protected route without auth
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+    if (!isAuthenticated) {
+      const url = new URL("/login", request.url)
+      url.searchParams.set("redirect", pathname)
+      return NextResponse.redirect(url)
+    }
+  }
+
+  // Redirect to home if accessing auth routes while authenticated
+  if (authRoutes.some((route) => pathname.startsWith(route))) {
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL("/", request.url))
+    }
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|public).*)",
+  ],
+}
