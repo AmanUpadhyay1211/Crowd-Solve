@@ -79,7 +79,7 @@ export function ProblemList() {
               </div>
             </CardHeader>
 
-            {problem.tags.length > 0 && (
+            {problem.tags && problem.tags.length > 0 && (
               <CardContent>
                 <div className="flex flex-wrap gap-2">
                   {problem.tags.map((tag) => (
@@ -93,13 +93,13 @@ export function ProblemList() {
 
             <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
+                <Link href={`/profile/${problem.author.username}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src={problem.author.avatar || "/placeholder.svg"} alt={problem.author.username} />
                     <AvatarFallback>{problem.author.username.charAt(0).toUpperCase()}</AvatarFallback>
                   </Avatar>
-                  <span>{problem.author.username}</span>
-                </div>
+                  <span className="hover:text-primary transition-colors">{problem.author.username}</span>
+                </Link>
                 <span>•</span>
                 <span>{formatDistanceToNow(new Date(problem.createdAt), { addSuffix: true })}</span>
               </div>

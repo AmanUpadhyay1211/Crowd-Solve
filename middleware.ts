@@ -5,8 +5,9 @@ import { verifyToken } from "@/lib/auth"
 // Routes that require authentication
 const protectedRoutes = ["/problems/new", "/settings", "/admin"]
 
-// Routes that should redirect to home if already authenticated
+// Routes that should redirect to problems if already authenticated
 const authRoutes = ["/login", "/register"]
+const landingPage = "/"
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -28,11 +29,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect to home if accessing auth routes while authenticated
+  // Redirect to problems if accessing auth routes while authenticated
   if (authRoutes.some((route) => pathname.startsWith(route))) {
     if (isAuthenticated) {
-      return NextResponse.redirect(new URL("/", request.url))
+      return NextResponse.redirect(new URL("/problems", request.url))
     }
+  }
+
+  // Redirect authenticated users from landing page to problems
+  if (pathname === landingPage && isAuthenticated) {
+    return NextResponse.redirect(new URL("/problems", request.url))
   }
 
   return NextResponse.next()

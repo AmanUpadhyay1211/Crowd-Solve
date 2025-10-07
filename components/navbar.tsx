@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Search, Plus, User, LogOut, Settings } from "lucide-react"
+import { Plus, User, LogOut, Settings } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { useRouter } from "next/navigation"
 
 export function Navbar() {
@@ -49,9 +50,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="hidden md:flex">
-            <Search className="h-5 w-5" />
-          </Button>
+          <ThemeToggle />
 
           {isAuthenticated ? (
             <>

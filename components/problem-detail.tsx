@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -101,16 +102,16 @@ export function ProblemDetail({ problemId }: { problemId: string }) {
             </div>
 
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
+              <Link href={`/profile/${problem.author.username}`} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={problem.author.avatar || "/placeholder.svg"} alt={problem.author.username} />
                   <AvatarFallback>{problem.author.username.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-foreground">{problem.author.username}</p>
+                  <p className="font-medium text-foreground hover:text-primary transition-colors">{problem.author.username}</p>
                   <p className="text-xs">{problem.author.reputation} reputation</p>
                 </div>
-              </div>
+              </Link>
 
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
