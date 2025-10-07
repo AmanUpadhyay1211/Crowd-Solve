@@ -40,8 +40,18 @@ export async function GET(request: NextRequest) {
       Problem.countDocuments(query),
     ])
 
+    // Ensure all problems have required fields with defaults
+    const normalizedProblems = problems.map((problem: any) => ({
+      ...problem,
+      tags: Array.isArray(problem.tags) ? problem.tags : [],
+      images: Array.isArray(problem.images) ? problem.images : [],
+      author: problem.author || { username: 'Unknown', avatar: null, reputation: 0 },
+      status: problem.status || 'open',
+      views: problem.views || 0
+    }))
+
     return NextResponse.json({
-      problems,
+      problems: normalizedProblems,
       pagination: {
         page,
         limit,

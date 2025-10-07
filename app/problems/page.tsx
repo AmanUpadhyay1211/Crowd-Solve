@@ -13,7 +13,12 @@ export default function ProblemsPage() {
           <p className="text-muted-foreground">Browse problems from the community and share your solutions</p>
         </div>
 
-        <Suspense fallback={<div>Loading problems...</div>}>
+        <Suspense fallback={
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Loading problems...</p>
+          </div>
+        }>
           <ProblemList />
         </Suspense>
       </main>

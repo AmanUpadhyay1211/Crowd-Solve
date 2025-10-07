@@ -26,25 +26,94 @@ interface Problem {
 export function ProblemList() {
   const [problems, setProblems] = useState<Problem[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     fetchProblems()
   }, [])
 
+  const retry = () => {
+    setRetryCount(prev => prev + 1)
+    fetchProblems()
+  }
+
   const fetchProblems = async () => {
     try {
-      const response = await fetch("/api/problems")
+      setError(null)
+      const response = await fetch("/api/problems", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add timeout
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
       const data = await response.json()
-      setProblems(data.problems)
-    } catch (error) {
+      
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid response format')
+      }
+      
+      // Ensure problems is an array and normalize the data
+      const normalizedProblems = (data.problems || []).map((problem: any) => ({
+        ...problem,
+        tags: Array.isArray(problem.tags) ? problem.tags : [],
+        images: Array.isArray(problem.images) ? problem.images : [],
+        author: problem.author || { username: 'Unknown', avatar: null, reputation: 0 }
+      }))
+      
+      setProblems(normalizedProblems)
+      setRetryCount(0) // Reset retry count on success
+    } catch (error: any) {
       console.error("[v0] Fetch problems error:", error)
+      
+      let errorMessage = "Failed to load problems. Please try again."
+      if (error.name === 'TimeoutError') {
+        errorMessage = "Request timed out. Please check your connection and try again."
+      } else if (error.message.includes('HTTP error')) {
+        errorMessage = `Server error (${error.message.split('status: ')[1]}). Please try again later.`
+      }
+      
+      setError(errorMessage)
+      setProblems([]) // Set empty array on error
     } finally {
       setIsLoading(false)
     }
   }
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading problems...</div>
+    return (
+      <div className="text-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+        <p>Loading problems...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-destructive mb-4">{error}</p>
+        <button 
+          onClick={retry}
+          className="text-primary hover:underline"
+          disabled={retryCount >= 3}
+        >
+          {retryCount >= 3 ? 'Max retries reached' : 'Try again'}
+        </button>
+        {retryCount >= 3 && (
+          <p className="text-sm text-muted-foreground mt-2">
+            Please refresh the page or contact support if the problem persists.
+          </p>
+        )}
+      </div>
+    )
   }
 
   if (problems.length === 0) {
