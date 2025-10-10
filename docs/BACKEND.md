@@ -2,7 +2,7 @@
 
 ## Overview
 
-The CrowdSolve backend is built using Next.js 14 API Routes with MongoDB as the database and Cloudinary for file storage. All APIs follow RESTful conventions and use JWT-based authentication.
+The CrowdSolve backend is built using Next.js 14 API Routes with MongoDB as the database and Cloudinary for file storage. All APIs follow RESTful conventions and use JWT-based authentication. The backend has been optimized with comprehensive error handling, data normalization, and intelligent caching strategies.
 
 ## Base URL
 ```
@@ -16,9 +16,71 @@ All protected endpoints require a valid JWT token in an httpOnly cookie named `t
 
 ### Authentication Flow
 1. User logs in via `/api/auth/login`
-2. Server returns JWT token in httpOnly cookie
+2. Server returns JWT token in httpOnly cookie with username
 3. Subsequent requests automatically include the token
 4. Server validates token on protected routes
+5. Middleware extracts username from JWT for profile redirection
+
+---
+
+## Error Handling & Data Normalization
+
+### Error Response Format
+All API endpoints return consistent error responses:
+
+```json
+{
+  "error": "Error message",
+  "status": 400,
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}
+```
+
+### HTTP Status Codes
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request (validation errors)
+- `401` - Unauthorized (invalid/missing token)
+- `403` - Forbidden (insufficient permissions)
+- `404` - Not Found
+- `500` - Internal Server Error
+
+### Data Normalization
+All API responses include normalized data structures:
+
+```typescript
+// Problems API Response
+{
+  "problems": [
+    {
+      "_id": "string",
+      "title": "string",
+      "description": "string",
+      "tags": ["string"], // Always array
+      "images": ["string"], // Always array
+      "author": {
+        "_id": "string",
+        "username": "string",
+        "avatar": "string | null",
+        "reputation": "number"
+      },
+      "status": "open | solved | closed",
+      "views": "number",
+      "createdAt": "string",
+      "updatedAt": "string"
+    }
+  ],
+  "pagination": {
+    "page": "number",
+    "limit": "number",
+    "total": "number",
+    "pages": "number"
+  }
+}
+```
+
+### Request Timeouts
+All API endpoints implement 10-second timeouts to prevent hanging requests.
 
 ---
 

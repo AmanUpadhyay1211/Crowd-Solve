@@ -13,43 +13,68 @@ graph TB
         B[React Components]
         C[Zustand State Management]
         D[Tailwind CSS + shadcn/ui]
+        E[App Initializer]
+    end
+    
+    subgraph "State Management Layer"
+        F[Problems Store]
+        G[Solutions Store]
+        H[Auth Store]
+        I[App Store]
     end
     
     subgraph "API Layer"
-        E[Next.js API Routes]
-        F[Authentication Middleware]
-        G[Request Validation]
+        J[Next.js API Routes]
+        K[Authentication Middleware]
+        L[Request Validation]
+        M[Error Handling]
     end
     
     subgraph "Business Logic Layer"
-        H[User Management]
-        I[Problem Management]
-        J[Solution Management]
-        K[Voting System]
-        L[Image Upload]
+        N[User Management]
+        O[Problem Management]
+        P[Solution Management]
+        Q[Voting System]
+        R[Image Upload]
+        S[Caching Layer]
     end
     
     subgraph "Data Layer"
-        M[MongoDB Database]
-        N[Mongoose ODM]
-        O[Cloudinary Storage]
+        T[MongoDB Database]
+        U[Mongoose ODM]
+        V[Cloudinary Storage]
     end
     
     A --> E
     B --> C
+    C --> F
+    C --> G
+    C --> H
+    C --> I
     E --> F
-    F --> G
-    G --> H
-    G --> I
+    E --> G
+    E --> H
+    E --> I
+    F --> J
     G --> J
-    G --> K
-    G --> L
-    H --> N
-    I --> N
-    J --> N
-    K --> N
-    L --> O
-    N --> M
+    H --> J
+    I --> J
+    J --> K
+    K --> L
+    L --> M
+    M --> N
+    M --> O
+    M --> P
+    M --> Q
+    M --> R
+    M --> S
+    N --> U
+    O --> U
+    P --> U
+    Q --> U
+    R --> V
+    S --> U
+    U --> T
 ```
 
 ## Technology Stack
@@ -101,9 +126,14 @@ App Layout
 ```
 
 #### State Management
-- **Global State**: Zustand store for authentication
+- **Global State**: Multiple Zustand stores for different domains
+  - **Auth Store**: User authentication and session management
+  - **Problems Store**: Problems data with caching and pagination
+  - **Solutions Store**: Solutions data with voting and real-time updates
+  - **App Store**: Application-wide settings and notifications
 - **Local State**: React useState for component-specific state
-- **Server State**: Direct API calls with loading states
+- **Server State**: Intelligent caching with automatic refresh detection
+- **Persistence**: Zustand persist middleware for cross-session state
 
 ### 2. Server-Side Architecture
 
@@ -134,9 +164,11 @@ App Layout
 ```
 
 #### Middleware
-- **Authentication**: JWT token verification
+- **Authentication**: JWT token verification with username extraction
 - **Route Protection**: Protected routes redirect to login
-- **Auth Routes**: Redirect authenticated users away from login/register
+- **Auth Routes**: Redirect authenticated users to their profile page
+- **Landing Page**: Redirect authenticated users to profile page
+- **Profile Redirection**: Smart redirection based on JWT payload
 
 ### 3. Database Architecture
 
@@ -227,12 +259,18 @@ User 1:N Votes (on Solutions)
 - **Image Optimization**: Next.js Image component
 - **Lazy Loading**: Dynamic imports for heavy components
 - **Caching**: Browser caching for static assets
+- **State Caching**: Zustand persist with intelligent refresh detection
+- **Optimistic Updates**: Real-time UI updates with rollback on error
+- **Request Deduplication**: Prevents duplicate API calls
 
 ### 2. Backend
 - **Database Indexing**: Optimized queries with proper indexes
 - **Connection Pooling**: MongoDB connection management
 - **File Upload**: Direct Cloudinary uploads
 - **Pagination**: Efficient data loading
+- **Error Handling**: Comprehensive error responses with proper HTTP status codes
+- **Request Timeouts**: 10-second timeouts for all API calls
+- **Data Normalization**: Consistent data structures across all endpoints
 
 ### 3. Database
 - **Indexes**: Strategic indexing on frequently queried fields

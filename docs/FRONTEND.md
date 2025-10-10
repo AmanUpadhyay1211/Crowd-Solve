@@ -43,6 +43,7 @@ components/
 │   ├── input.tsx
 │   └── ...
 ├── admin-dashboard.tsx   # Admin dashboard component
+├── app-initializer.tsx   # App initialization component
 ├── auth-provider.tsx     # Auth context provider
 ├── avatar-upload.tsx     # Avatar upload component
 ├── image-upload.tsx      # Image upload component
@@ -53,20 +54,26 @@ components/
 ├── solution-card.tsx    # Solution card component
 ├── solution-form.tsx    # Solution form component
 ├── theme-provider.tsx   # Theme context provider
+├── theme-toggle.tsx     # Theme toggle component
 └── user-profile.tsx     # User profile component
 
 lib/
 ├── hooks/
-│   └── use-auth.ts      # Authentication hook
-├── models/              # TypeScript interfaces
+│   ├── use-auth.ts                    # Authentication hook
+│   └── use-app-initialization.ts      # App initialization hook
+├── stores/                            # Zustand state stores
+│   ├── problems-store.ts              # Problems state management
+│   ├── solutions-store.ts             # Solutions state management
+│   └── app-store.ts                   # App-wide state management
+├── models/                            # TypeScript interfaces
 │   ├── Problem.ts
 │   ├── Solution.ts
 │   ├── User.ts
 │   └── Vote.ts
-├── auth.ts              # Auth utilities
-├── cloudinary.ts        # Cloudinary config
-├── mongodb.ts           # Database connection
-└── utils.ts             # Utility functions
+├── auth.ts                            # Auth utilities
+├── cloudinary.ts                      # Cloudinary config
+├── mongodb.ts                         # Database connection
+└── utils.ts                           # Utility functions
 
 hooks/
 ├── use-mobile.ts        # Mobile detection hook
@@ -451,8 +458,11 @@ export function AdminDashboard() {
 
 ## State Management
 
-### Zustand Store Structure
+### Zustand Store Architecture
 
+The application uses multiple Zustand stores for different domains, providing a clean separation of concerns and optimal performance.
+
+#### 1. Auth Store (`lib/stores/auth-store.ts`)
 ```typescript
 interface AuthStore {
   user: User | null
@@ -466,6 +476,72 @@ interface AuthStore {
   register: (username: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   fetchUser: () => Promise<void>
+}
+```
+
+#### 2. Problems Store (`lib/stores/problems-store.ts`)
+```typescript
+interface ProblemsStore {
+  problems: Problem[]
+  currentProblem: Problem | null
+  isLoading: boolean
+  isRefreshing: boolean
+  error: string | null
+  pagination: ProblemsPagination | null
+  filters: ProblemFilters
+  lastFetched: number | null
+  
+  // Actions
+  fetchProblems: (filters?: Partial<ProblemFilters>, forceRefresh?: boolean) => Promise<void>
+  fetchProblemById: (id: string) => Promise<void>
+  refreshProblems: () => Promise<void>
+  addProblem: (problem: Problem) => void
+  updateProblem: (problemId: string, updates: Partial<Problem>) => void
+  removeProblem: (problemId: string) => void
+  shouldRefresh: () => boolean
+}
+```
+
+#### 3. Solutions Store (`lib/stores/solutions-store.ts`)
+```typescript
+interface SolutionsStore {
+  solutions: Solution[]
+  currentSolution: Solution | null
+  isLoading: boolean
+  isRefreshing: boolean
+  error: string | null
+  lastFetched: number | null
+  userVotes: Record<string, 'upvote' | 'downvote'>
+  
+  // Actions
+  fetchSolutions: (problemId: string, forceRefresh?: boolean) => Promise<void>
+  fetchSolutionById: (id: string) => Promise<void>
+  voteSolution: (solutionId: string, voteType: 'upvote' | 'downvote') => Promise<void>
+  acceptSolution: (solutionId: string) => Promise<void>
+  refreshSolutions: (problemId: string) => Promise<void>
+  addSolution: (solution: Solution) => void
+  updateSolution: (solutionId: string, updates: Partial<Solution>) => void
+  removeSolution: (solutionId: string) => void
+}
+```
+
+#### 4. App Store (`lib/stores/app-store.ts`)
+```typescript
+interface AppStore {
+  notifications: Notification[]
+  settings: AppSettings
+  isOnline: boolean
+  lastActivity: number | null
+  
+  // Actions
+  addNotification: (notification: Notification) => void
+  markNotificationAsRead: (notificationId: string) => void
+  updateSettings: (settings: Partial<AppSettings>) => void
+  setOnlineStatus: (isOnline: boolean) => void
+  updateLastActivity: () => void
+  
+  // Computed
+  unreadNotificationsCount: number
 }
 ```
 

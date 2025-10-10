@@ -22,6 +22,7 @@
 - **Password hashing** with bcryptjs and salt rounds
 - **Route protection** with Next.js middleware
 - **Session management** with automatic token refresh
+- **Smart redirection** to user profiles for authenticated users
 
 ### 📝 **Problem Management**
 - **Rich problem posting** with images, descriptions, tags, and location
@@ -29,13 +30,16 @@
 - **Problem status tracking** (open, solved, closed)
 - **Search and filtering** by tags, status, and content
 - **View counting** and engagement metrics
+- **Intelligent caching** with automatic refresh detection
+- **Manual refresh** functionality for real-time updates
 
 ### 💡 **Solution System**
 - **Collaborative solutions** with voting mechanism
 - **Upvote/downvote system** to surface best answers
 - **Solution acceptance** (problem author can mark solutions as accepted)
 - **Rich text support** with image attachments
-- **Real-time vote counting**
+- **Real-time vote counting** with optimistic UI updates
+- **User vote tracking** to prevent duplicate votes
 
 ### 👤 **User Experience**
 - **User profiles** with reputation system
@@ -50,12 +54,22 @@
 - **Smooth animations** with Tailwind CSS
 - **Accessible components** with shadcn/ui
 - **Toast notifications** for user feedback
+- **Loading states** and error handling throughout
+- **Refresh indicators** for data freshness
 
 ### 🛠️ **Admin Features**
 - **Admin dashboard** with platform statistics
 - **User management** and activity monitoring
 - **Problem and solution moderation**
 - **Analytics and insights**
+
+### ⚡ **Performance & State Management**
+- **Zustand state management** with multiple focused stores
+- **Intelligent caching** with automatic refresh detection
+- **Optimistic UI updates** for better user experience
+- **Request deduplication** to prevent unnecessary API calls
+- **Data normalization** for consistent data structures
+- **Error handling** with retry mechanisms and user feedback
 
 ## 🛠️ Tech Stack
 
@@ -64,10 +78,11 @@
 - **Language**: TypeScript 5.0
 - **UI Library**: shadcn/ui + Radix UI
 - **Styling**: Tailwind CSS v4
-- **State Management**: Zustand
+- **State Management**: Zustand (Multi-store architecture)
 - **Icons**: Lucide React
 - **Forms**: React Hook Form + Zod
 - **Notifications**: Sonner (Toast)
+- **Caching**: Intelligent caching with refresh detection
 
 ### **Backend**
 - **Runtime**: Node.js 18+
@@ -76,6 +91,8 @@
 - **Authentication**: JWT with jose
 - **File Storage**: Cloudinary
 - **Password Hashing**: bcryptjs
+- **Error Handling**: Comprehensive error responses
+- **Data Normalization**: Consistent data structures
 
 ### **Development**
 - **Package Manager**: pnpm
@@ -165,20 +182,30 @@ For detailed information about the application, please refer to our comprehensiv
 - Technology stack decisions
 - Security and performance considerations
 - Scalability and deployment strategies
+- **Updated**: Multi-store Zustand architecture
 
 ### 🔧 [Backend API Documentation](docs/BACKEND.md)
 - Complete API reference with examples
 - Authentication and authorization flows
 - Database models and relationships
 - Error handling and validation patterns
+- **Updated**: Enhanced error handling and data normalization
 
 ### 🎨 [Frontend Documentation](docs/FRONTEND.md)
 - Component architecture and usage
 - State management with Zustand
 - Routing and middleware implementation
 - Styling and theming system
+- **Updated**: Multi-store state management patterns
 
-> **💡 Tip**: Start with the [Architecture Documentation](docs/ARCHITECTURE.md) to understand the overall system design, then dive into specific areas based on your needs.
+### 🏪 [Zustand Implementation Guide](docs/ZUSTAND_IMPLEMENTATION.md)
+- Comprehensive Zustand state management guide
+- Multi-store architecture patterns
+- Performance optimizations and caching strategies
+- Migration guide from useState to Zustand
+- Best practices and troubleshooting
+
+> **💡 Tip**: Start with the [Architecture Documentation](docs/ARCHITECTURE.md) to understand the overall system design, then dive into specific areas based on your needs. For state management, check out the [Zustand Implementation Guide](docs/ZUSTAND_IMPLEMENTATION.md).
 
 ## 📁 Project Structure
 

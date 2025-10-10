@@ -29,15 +29,26 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect to problems if accessing auth routes while authenticated
+  // Redirect to profile if accessing auth routes while authenticated
   if (authRoutes.some((route) => pathname.startsWith(route))) {
     if (isAuthenticated) {
+      // We need to get the username from the token to redirect to profile
+      const payload = await verifyToken(token!)
+      if (payload && payload.username) {
+        return NextResponse.redirect(new URL(`/profile/${payload.username}`, request.url))
+      }
+      // Fallback to problems if username not available
       return NextResponse.redirect(new URL("/problems", request.url))
     }
   }
 
-  // Redirect authenticated users from landing page to problems
+  // Redirect authenticated users from landing page to their profile
   if (pathname === landingPage && isAuthenticated) {
+    const payload = await verifyToken(token!)
+    if (payload && payload.username) {
+      return NextResponse.redirect(new URL(`/profile/${payload.username}`, request.url))
+    }
+    // Fallback to problems if username not available
     return NextResponse.redirect(new URL("/problems", request.url))
   }
 

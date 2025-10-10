@@ -1,8 +1,22 @@
+"use client"
+
 import { Navbar } from "@/components/navbar"
 import { ProblemList } from "@/components/problem-list"
-import { Suspense } from "react"
+import { Suspense, useEffect } from "react"
+import { useProblemsStore } from "@/lib/stores/problems-store"
+import { useAuth } from "@/lib/hooks/use-auth"
 
 export default function ProblemsPage() {
+  const { isAuthenticated } = useAuth()
+  const { fetchProblems, isLoading, error } = useProblemsStore()
+
+  // Fetch problems on component mount
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchProblems()
+    }
+  }, [isAuthenticated, fetchProblems])
+
   return (
     <div className="min-h-screen">
       <Navbar />
