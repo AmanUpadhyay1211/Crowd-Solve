@@ -2,41 +2,36 @@
 
 import { useEffect } from "react"
 import { useAuth } from "./use-auth"
-import { useProblemsStore } from "@/lib/stores/problems-store"
 import { useAppStore } from "@/lib/stores/app-store"
 
 export function useAppInitialization() {
   const { isAuthenticated, hasInitialized } = useAuth()
-  const { fetchProblems } = useProblemsStore()
   const { updateLastActivity } = useAppStore()
 
   // Initialize app data when user is authenticated
   useEffect(() => {
     if (hasInitialized && isAuthenticated) {
-      // Fetch initial data
-      fetchProblems()
-      
-      // Update last activity
+      // Update last activity on login
       updateLastActivity()
     }
-  }, [hasInitialized, isAuthenticated, fetchProblems, updateLastActivity])
+  }, [hasInitialized, isAuthenticated, updateLastActivity])
 
-  // Track user activity
+  // Track meaningful user activity (only on specific actions)
   useEffect(() => {
-    const handleActivity = () => {
+    const handleMeaningfulActivity = () => {
       updateLastActivity()
     }
 
-    // Track various user activities
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart']
+    // Only track meaningful interactions, not every mouse move
+    const events = ['click', 'keydown', 'submit']
     
     events.forEach(event => {
-      document.addEventListener(event, handleActivity, true)
+      document.addEventListener(event, handleMeaningfulActivity, true)
     })
 
     return () => {
       events.forEach(event => {
-        document.removeEventListener(event, handleActivity, true)
+        document.removeEventListener(event, handleMeaningfulActivity, true)
       })
     }
   }, [updateLastActivity])
