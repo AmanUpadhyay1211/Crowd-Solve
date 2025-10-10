@@ -13,7 +13,12 @@ export interface Solution {
     avatar?: string
     reputation: number
   }
-  problem: string
+  problem: string | {
+    _id: string
+    title: string
+    description: string
+    status: string
+  }
   upvotes: number
   downvotes: number
   votes: number // Keep for backward compatibility
@@ -39,6 +44,19 @@ interface SolutionsStore {
   error: string | null
   lastFetched: number | null
   userVotes: Record<string, 'upvote' | 'downvote'> // solutionId -> voteType
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    pages: number
+  } | null
+  filters: {
+    sortBy?: 'votes' | 'createdAt' | 'upvotes'
+    order?: 'asc' | 'desc'
+    status?: 'accepted' | 'pending'
+    page?: number
+    limit?: number
+  }
   
   // Actions
   setSolutions: (solutions: Solution[]) => void
@@ -46,10 +64,13 @@ interface SolutionsStore {
   setLoading: (loading: boolean) => void
   setRefreshing: (refreshing: boolean) => void
   setError: (error: string | null) => void
+  setPagination: (pagination: SolutionsStore['pagination']) => void
+  setFilters: (filters: Partial<SolutionsStore['filters']>) => void
   addSolution: (solution: Solution) => void
   updateSolution: (solutionId: string, updates: Partial<Solution>) => void
   removeSolution: (solutionId: string) => void
-  fetchSolutions: (problemId: string, forceRefresh?: boolean) => Promise<void>
+  fetchSolutions: (problemId: string, filters?: Partial<SolutionsStore['filters']>, forceRefresh?: boolean) => Promise<void>
+  fetchAllSolutions: (filters?: Partial<SolutionsStore['filters']>, forceRefresh?: boolean) => Promise<void>
   fetchSolutionById: (id: string) => Promise<void>
   voteSolution: (solutionId: string, voteType: 'upvote' | 'downvote') => Promise<void>
   acceptSolution: (solutionId: string) => Promise<void>
@@ -71,6 +92,13 @@ export const useSolutionsStore = create<SolutionsStore>()(
       error: null,
       lastFetched: null,
       userVotes: {},
+      pagination: null,
+      filters: {
+        sortBy: 'votes',
+        order: 'desc',
+        page: 1,
+        limit: 10
+      },
 
       // Actions
       setSolutions: (solutions) => set({ solutions }),
@@ -78,6 +106,10 @@ export const useSolutionsStore = create<SolutionsStore>()(
       setLoading: (isLoading) => set({ isLoading }),
       setRefreshing: (isRefreshing) => set({ isRefreshing }),
       setError: (error) => set({ error }),
+      setPagination: (pagination) => set({ pagination }),
+      setFilters: (filters) => set((state) => ({ 
+        filters: { ...state.filters, ...filters } 
+      })),
       
       addSolution: (solution) => set((state) => ({
         solutions: [solution, ...state.solutions]
@@ -154,6 +186,83 @@ export const useSolutionsStore = create<SolutionsStore>()(
           })
         } catch (error: any) {
           console.error('Fetch solutions error:', error)
+          set({
+            error: error.message || 'Failed to fetch solutions',
+            isLoading: false,
+            isRefreshing: false
+          })
+        }
+      },
+
+      fetchAllSolutions: async (filters = {}, forceRefresh = false) => {
+        const state = get()
+        
+        // Check if we should refresh
+        if (!forceRefresh && !state.shouldRefresh() && state.solutions.length > 0) {
+          return
+        }
+
+        try {
+          set({ 
+            isLoading: true, 
+            error: null,
+            isRefreshing: state.solutions.length > 0 
+          })
+
+          // Build query parameters
+          const queryParams = new URLSearchParams()
+          const mergedFilters = { ...state.filters, ...filters }
+          
+          if (mergedFilters.sortBy) queryParams.append('sortBy', mergedFilters.sortBy)
+          if (mergedFilters.order) queryParams.append('order', mergedFilters.order)
+          if (mergedFilters.status) queryParams.append('status', mergedFilters.status)
+          if (mergedFilters.page) queryParams.append('page', mergedFilters.page.toString())
+          if (mergedFilters.limit) queryParams.append('limit', mergedFilters.limit.toString())
+
+          const response = await fetch(`/api/solutions?${queryParams.toString()}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            signal: AbortSignal.timeout(10000)
+          })
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+
+          const data = await response.json()
+          
+          // Normalize solutions data
+          const normalizedSolutions = data.solutions.map((solution: any) => ({
+            ...solution,
+            images: Array.isArray(solution.images) ? solution.images : [],
+            author: solution.author || { 
+              _id: 'unknown', 
+              username: 'Unknown', 
+              avatar: null, 
+              reputation: 0 
+            },
+            problem: solution.problem || { 
+              _id: 'unknown', 
+              title: 'Unknown Problem', 
+              description: '', 
+              status: 'pending' 
+            },
+            upvotes: solution.upvotes || 0,
+            downvotes: solution.downvotes || 0,
+            votes: solution.votes || solution.upvotes || 0,
+            isAccepted: solution.isAccepted || false
+          }))
+
+          set({
+            solutions: normalizedSolutions,
+            pagination: data.pagination || null,
+            lastFetched: Date.now(),
+            isLoading: false,
+            isRefreshing: false,
+            error: null
+          })
+        } catch (error: any) {
+          console.error('Fetch all solutions error:', error)
           set({
             error: error.message || 'Failed to fetch solutions',
             isLoading: false,
