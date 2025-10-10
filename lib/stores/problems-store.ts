@@ -69,6 +69,9 @@ interface ProblemsStore {
   fetchProblems: (filters?: Partial<ProblemFilters>, forceRefresh?: boolean) => Promise<void>
   fetchProblemById: (id: string) => Promise<void>
   refreshProblems: () => Promise<void>
+  goToPage: (page: number) => Promise<void>
+  nextPage: () => Promise<void>
+  previousPage: () => Promise<void>
   clearProblems: () => void
   shouldRefresh: () => boolean
 }
@@ -243,6 +246,27 @@ export const useProblemsStore = create<ProblemsStore>()(
       refreshProblems: async () => {
         const { fetchProblems, filters } = get()
         await fetchProblems(filters, true)
+      },
+
+      goToPage: async (page: number) => {
+        const { fetchProblems, filters, pagination } = get()
+        if (pagination && page >= 1 && page <= pagination.pages) {
+          await fetchProblems({ ...filters, page }, true)
+        }
+      },
+
+      nextPage: async () => {
+        const { pagination, goToPage } = get()
+        if (pagination && pagination.page < pagination.pages) {
+          await goToPage(pagination.page + 1)
+        }
+      },
+
+      previousPage: async () => {
+        const { pagination, goToPage } = get()
+        if (pagination && pagination.page > 1) {
+          await goToPage(pagination.page - 1)
+        }
       },
 
       clearProblems: () => set({

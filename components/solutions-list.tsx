@@ -10,6 +10,7 @@ import { ThumbsUp, ThumbsDown, CheckCircle, RefreshCw, Filter, Trophy } from "lu
 import { formatDistanceToNow } from "date-fns"
 import { useSolutionsStore } from "@/lib/stores/solutions-store"
 import { SolutionListSkeleton } from "@/components/skeletons/solution-card-skeleton"
+import { SmartPagination } from "@/components/smart-pagination"
 
 export function SolutionsList() {
   const {
@@ -21,6 +22,7 @@ export function SolutionsList() {
     filters,
     fetchAllSolutions,
     refreshSolutions,
+    goToPage,
     setFilters,
     shouldRefresh
   } = useSolutionsStore()
@@ -170,16 +172,14 @@ export function SolutionsList() {
         })}
       </div>
 
-      {/* Load More Button */}
-      {pagination && pagination.page < pagination.pages && (
-        <div className="text-center pt-6">
-          <Button
-            onClick={() => handleFilterChange({ page: pagination.page + 1 })}
-            variant="outline"
-            disabled={isLoading}
-          >
-            Load More Solutions
-          </Button>
+      {/* Pagination */}
+      {pagination && pagination.pages > 1 && (
+        <div className="mt-8">
+          <SmartPagination
+            currentPage={pagination.page}
+            totalPages={pagination.pages}
+            onPageChange={goToPage}
+          />
         </div>
       )}
     </div>

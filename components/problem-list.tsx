@@ -10,6 +10,7 @@ import { Eye, RefreshCw, Filter } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useProblemsStore } from "@/lib/stores/problems-store"
 import { ProblemListSkeleton } from "@/components/skeletons/problem-card-skeleton"
+import { SmartPagination } from "@/components/smart-pagination"
 
 export function ProblemList() {
   const {
@@ -21,6 +22,7 @@ export function ProblemList() {
     filters,
     fetchProblems,
     refreshProblems,
+    goToPage,
     setFilters,
     shouldRefresh
   } = useProblemsStore()
@@ -160,6 +162,17 @@ export function ProblemList() {
           </Link>
         ))}
       </div>
+
+      {/* Pagination */}
+      {pagination && pagination.pages > 1 && (
+        <div className="mt-8">
+          <SmartPagination
+            currentPage={pagination.page}
+            totalPages={pagination.pages}
+            onPageChange={goToPage}
+          />
+        </div>
+      )}
     </div>
   )
 }

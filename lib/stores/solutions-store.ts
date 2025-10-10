@@ -75,6 +75,9 @@ interface SolutionsStore {
   voteSolution: (solutionId: string, voteType: 'upvote' | 'downvote') => Promise<void>
   acceptSolution: (solutionId: string) => Promise<void>
   refreshSolutions: (problemId: string) => Promise<void>
+  goToPage: (page: number) => Promise<void>
+  nextPage: () => Promise<void>
+  previousPage: () => Promise<void>
   clearSolutions: () => void
   shouldRefresh: () => boolean
 }
@@ -383,6 +386,27 @@ export const useSolutionsStore = create<SolutionsStore>()(
       refreshSolutions: async (problemId: string) => {
         const { fetchSolutions } = get()
         await fetchSolutions(problemId, true)
+      },
+
+      goToPage: async (page: number) => {
+        const { fetchAllSolutions, filters, pagination } = get()
+        if (pagination && page >= 1 && page <= pagination.pages) {
+          await fetchAllSolutions({ ...filters, page }, true)
+        }
+      },
+
+      nextPage: async () => {
+        const { pagination, goToPage } = get()
+        if (pagination && pagination.page < pagination.pages) {
+          await goToPage(pagination.page + 1)
+        }
+      },
+
+      previousPage: async () => {
+        const { pagination, goToPage } = get()
+        if (pagination && pagination.page > 1) {
+          await goToPage(pagination.page - 1)
+        }
       },
 
       clearSolutions: () => set({
