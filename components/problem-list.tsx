@@ -9,11 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Eye, RefreshCw, Filter } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useProblemsStore } from "@/lib/stores/problems-store"
-import { useAuth } from "@/lib/hooks/use-auth"
 import { ProblemListSkeleton } from "@/components/skeletons/problem-card-skeleton"
 
 export function ProblemList() {
-  const { isAuthenticated } = useAuth()
   const {
     problems,
     isLoading,
@@ -28,10 +26,8 @@ export function ProblemList() {
   } = useProblemsStore()
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchProblems()
-    }
-  }, [isAuthenticated, fetchProblems])
+    fetchProblems()
+  }, []) // Only run once on mount
 
   const handleRefresh = () => {
     refreshProblems()

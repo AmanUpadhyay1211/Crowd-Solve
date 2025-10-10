@@ -4,19 +4,15 @@ import { Navbar } from "@/components/navbar"
 import { ProblemList } from "@/components/problem-list"
 import { Suspense, useEffect } from "react"
 import { useProblemsStore } from "@/lib/stores/problems-store"
-import { useAuth } from "@/lib/hooks/use-auth"
 import { ProblemListSkeleton } from "@/components/skeletons/problem-card-skeleton"
 
 export default function ProblemsPage() {
-  const { isAuthenticated } = useAuth()
   const { fetchProblems, isLoading, error } = useProblemsStore()
 
-  // Fetch problems on component mount
+  // Fetch problems on component mount (visible to everyone)
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchProblems()
-    }
-  }, [isAuthenticated, fetchProblems])
+    fetchProblems()
+  }, []) // Empty dependency array - only run once on mount
 
   return (
     <div className="min-h-screen">

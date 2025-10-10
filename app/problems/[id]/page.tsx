@@ -5,19 +5,16 @@ import { ProblemDetail } from "@/components/problem-detail"
 import { useEffect } from "react"
 import { useProblemsStore } from "@/lib/stores/problems-store"
 import { useSolutionsStore } from "@/lib/stores/solutions-store"
-import { useAuth } from "@/lib/hooks/use-auth"
 
 export default function ProblemPage({ params }: { params: { id: string } }) {
-  const { isAuthenticated } = useAuth()
   const { fetchProblemById } = useProblemsStore()
   const { fetchSolutions } = useSolutionsStore()
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchProblemById(params.id)
-      fetchSolutions(params.id)
-    }
-  }, [isAuthenticated, params.id, fetchProblemById, fetchSolutions])
+    // Fetch problem and solutions for everyone (public content)
+    fetchProblemById(params.id)
+    fetchSolutions(params.id)
+  }, [params.id]) // Only re-run when problem ID changes
 
   return (
     <div className="min-h-screen">
