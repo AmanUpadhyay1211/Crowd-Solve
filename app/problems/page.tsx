@@ -5,6 +5,7 @@ import { ProblemList } from "@/components/problem-list"
 import { Suspense, useEffect } from "react"
 import { useProblemsStore } from "@/lib/stores/problems-store"
 import { useAuth } from "@/lib/hooks/use-auth"
+import { ProblemListSkeleton } from "@/components/skeletons/problem-card-skeleton"
 
 export default function ProblemsPage() {
   const { isAuthenticated } = useAuth()
@@ -27,12 +28,7 @@ export default function ProblemsPage() {
           <p className="text-muted-foreground">Browse problems from the community and share your solutions</p>
         </div>
 
-        <Suspense fallback={
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Loading problems...</p>
-          </div>
-        }>
+        <Suspense fallback={<ProblemListSkeleton count={5} />}>
           <ProblemList />
         </Suspense>
       </main>

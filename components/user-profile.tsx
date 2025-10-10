@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Trophy, FileQuestion, Lightbulb, CheckCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { UserProfileSkeleton } from "@/components/skeletons/user-profile-skeleton"
 
 interface User {
   username: string
@@ -73,7 +74,11 @@ export function UserProfile({ username }: { username: string }) {
   }
 
   if (isLoading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>
+    return (
+      <main className="container mx-auto px-4 py-8">
+        <UserProfileSkeleton />
+      </main>
+    )
   }
 
   if (!user) {

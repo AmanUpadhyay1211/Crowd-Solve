@@ -10,6 +10,7 @@ import { Eye, RefreshCw, Filter } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useProblemsStore } from "@/lib/stores/problems-store"
 import { useAuth } from "@/lib/hooks/use-auth"
+import { ProblemListSkeleton } from "@/components/skeletons/problem-card-skeleton"
 
 export function ProblemList() {
   const { isAuthenticated } = useAuth()
@@ -42,12 +43,7 @@ export function ProblemList() {
   }
 
   if (isLoading) {
-    return (
-      <div className="text-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p>Loading problems...</p>
-      </div>
-    )
+    return <ProblemListSkeleton count={5} />
   }
 
   if (error) {

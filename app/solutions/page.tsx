@@ -1,4 +1,6 @@
 import { Navbar } from "@/components/navbar"
+import { SolutionListSkeleton } from "@/components/skeletons/solution-card-skeleton"
+import { Suspense } from "react"
 
 export default function SolutionsPage() {
   return (
@@ -11,9 +13,11 @@ export default function SolutionsPage() {
           <p className="text-muted-foreground">Browse solutions from the community</p>
         </div>
 
-        <div className="text-center py-12 text-muted-foreground">
-          Solutions are displayed on individual problem pages
-        </div>
+        <Suspense fallback={<SolutionListSkeleton count={5} />}>
+          <div className="text-center py-12 text-muted-foreground">
+            Solutions are displayed on individual problem pages
+          </div>
+        </Suspense>
       </main>
     </div>
   )

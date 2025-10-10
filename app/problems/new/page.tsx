@@ -15,6 +15,7 @@ import { ImageUpload } from "@/components/image-upload"
 import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
 import { useAuth } from "@/lib/hooks/use-auth"
+import { SettingsSkeleton } from "@/components/skeletons/settings-skeleton"
 
 export default function NewProblemPage() {
   const router = useRouter()
@@ -27,7 +28,18 @@ export default function NewProblemPage() {
   const [error, setError] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  if (!isLoading && !isAuthenticated) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <main className="container mx-auto px-4 py-8">
+          <SettingsSkeleton />
+        </main>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
     router.push("/login")
     return null
   }

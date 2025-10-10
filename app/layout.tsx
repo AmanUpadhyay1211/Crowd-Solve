@@ -5,6 +5,7 @@ import "./globals.css"
 import { AuthProvider } from "@/components/auth-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AppInitializer } from "@/components/app-initializer"
+import { NavbarSkeleton } from "@/components/skeletons/navbar-skeleton"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 

@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { useRouter } from "next/navigation"
+import { SettingsSkeleton } from "@/components/skeletons/settings-skeleton"
 
 export function SettingsForm() {
   const router = useRouter()
@@ -60,7 +61,7 @@ export function SettingsForm() {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <SettingsSkeleton />
   }
 
   if (!user) {

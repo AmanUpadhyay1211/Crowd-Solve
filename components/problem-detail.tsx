@@ -14,6 +14,8 @@ import { SolutionCard } from "@/components/solution-card"
 import { useAuth } from "@/lib/hooks/use-auth"
 import { useProblemsStore } from "@/lib/stores/problems-store"
 import { useSolutionsStore } from "@/lib/stores/solutions-store"
+import { ProblemDetailSkeleton } from "@/components/skeletons/problem-detail-skeleton"
+import { SolutionListSkeleton } from "@/components/skeletons/solution-card-skeleton"
 
 export function ProblemDetail({ problemId }: { problemId: string }) {
   const { user } = useAuth()
@@ -36,12 +38,9 @@ export function ProblemDetail({ problemId }: { problemId: string }) {
 
   if (problemLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading problem...</p>
-        </div>
-      </div>
+      <main className="container mx-auto px-4 py-8">
+        <ProblemDetailSkeleton />
+      </main>
     )
   }
 
@@ -163,10 +162,7 @@ export function ProblemDetail({ problemId }: { problemId: string }) {
           </div>
 
           {solutionsLoading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
-              <p className="text-sm text-muted-foreground">Loading solutions...</p>
-            </div>
+            <SolutionListSkeleton count={3} />
           ) : solutionsError ? (
             <div className="text-center py-8">
               <p className="text-destructive mb-4">{solutionsError}</p>

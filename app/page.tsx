@@ -2,13 +2,16 @@ import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { ArrowRight, Users, Lightbulb, TrendingUp } from "lucide-react"
+import { HomePageSkeleton } from "@/components/skeletons/home-page-skeleton"
+import { Suspense } from "react"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
       <Navbar />
 
-      <main>
+      <Suspense fallback={<HomePageSkeleton />}>
+        <main>
         {/* Hero Section */}
         <section className="container mx-auto px-4 py-20 md:py-32">
           <div className="mx-auto max-w-4xl text-center">
@@ -85,7 +88,8 @@ export default function HomePage() {
             </Link>
           </div>
         </section>
-      </main>
+        </main>
+      </Suspense>
     </div>
   )
 }

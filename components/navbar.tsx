@@ -14,14 +14,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Plus, User, LogOut, Settings } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useRouter } from "next/navigation"
+import { NavbarSkeleton } from "@/components/skeletons/navbar-skeleton"
 
 export function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout, isLoading } = useAuth()
   const router = useRouter()
 
   const handleLogout = async () => {
     await logout()
     router.push("/")
+  }
+
+  if (isLoading) {
+    return <NavbarSkeleton />
   }
 
   return (

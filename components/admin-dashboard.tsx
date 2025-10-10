@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Users, FileQuestion, Lightbulb, CheckCircle, AlertCircle } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { AdminDashboardSkeleton } from "@/components/skeletons/admin-dashboard-skeleton"
 
 interface Stats {
   totalUsers: number
@@ -73,7 +74,7 @@ export function AdminDashboard() {
   }
 
   if (isLoading) {
-    return <div>Loading dashboard...</div>
+    return <AdminDashboardSkeleton />
   }
 
   return (
